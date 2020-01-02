@@ -1,7 +1,7 @@
 /*
  * @Author: your 赵静
  * @Date: 2019-12-31 14:10:03
- * @LastEditTime : 2019-12-31 19:37:52
+ * @LastEditTime : 2020-01-02 16:55:51
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \blog\app.js
@@ -18,7 +18,7 @@ const getPostData = (req) => {
             return
         }
 
-        if (req.headers['Content-type'] !== 'application/json') {
+        if (req.headers['content-type'] !== 'application/json') {
             resolve({})
             return
         }
@@ -34,7 +34,8 @@ const getPostData = (req) => {
             }
             resolve(JSON.parse(postData))
         })
-    })
+    });
+    return promise
 }
 
 const serverHandle = (req, res) => {
@@ -51,24 +52,29 @@ const serverHandle = (req, res) => {
     getPostData(req).then(postData => {
         req.body = postData;
         //处理博客路由
-        const blogData = handleBlogRouter(req, res);
-        if (blogData) {
-            res.end(JSON.stringify(blogData))
+        const blogResult = handleBlogRouter(req, res);
+        if(blogResult){
+            blogResult.then(blogData=>{
+                res.end(JSON.stringify(blogData))
+            });
             return
         }
+        
         //处理用户路由
         const userData = handleUserRouter(req, res);
         if (userData) {
             res.end(JSON.stringify(userData))
             return
-        }
+        };
+
+        //处理404
+        res.writeHead(404, {
+            "Content-type": "text/plain"
+        });
+        res.write("404 Not Found\n")
+        res.end();
     });
 
-    //处理404
-    res.writeHead(404, {
-        "Content-type": "text/plain"
-    });
-    res.write("404 Not Found\n")
-    res.end();
+
 }
 module.exports = serverHandle;
