@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2019-12-31 18:07:32
- * @LastEditTime : 2020-01-02 17:23:30
+ * @LastEditTime : 2020-01-03 09:54:18
  * @LastEditors  : Please set LastEditors
  * @Description: 返回接口数据
  * @FilePath: \blog\src\controller\blog.js
@@ -33,19 +33,38 @@ const getDetail = (id) =>{
 
 //上传新的博客详情
 const newBlog = (blogData={})=>{
-    return{
-        id:3
-    }
+    let newTime = new Date().getTime();
+    let sql = `insert into blogs (title,content,author,createtime) values ('${blogData.title}','${blogData.content}','${blogData.author}',${newTime})`;
+    return exec(sql).then(insertData=>{
+        return {
+            id:insertData.insertId
+        }
+    })
 }
 
 //更新博客详情
 const updataBlog = (id,blogData={})=>{
-    return true
+    let newTime = new Date().getTime();
+    let sql = `update blogs set title='${blogData.title}', content='${blogData.title}',updatatime=${newTime} where id=${id}`;
+    return exec(sql).then(insertData=>{
+        if(insertData.affectedRows){
+            return true
+        }else{
+            return false
+        }
+    })
 }
 
 //删除博客
 const delBlog = (id)=>{
-    return true
+    let sql = `DELETE FROM blogs WHERE id=${id}`;
+    return exec(sql).then(insertData=>{
+        if(insertData.affectedRows){
+            return true
+        }else{
+            return false
+        }
+    })
 }
 
 module.exports = {

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2019-12-31 17:03:30
- * @LastEditTime : 2020-01-02 17:19:55
+ * @LastEditTime : 2020-01-03 09:48:05
  * @LastEditors  : Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \blog\src\router\blog.js
@@ -41,35 +41,37 @@ const handleBlogRouter = (req, res) => {
 
     //新建一篇博客
     if (req.path === '/api/blog/new' && method === 'POST') {
-        const data = newBlog(req.body);
-        return {
-            msg: new SuccessModel(data)
-        }
+        const result = newBlog(req.body);
+        return result.then(data => {
+            return new SuccessModel(data)
+        })
     }
 
     //这是更新一篇博客
-    if (req.path === '/api/blog/update' && method === 'POST') {
+    if (req.path === '/api/blog/updata' && method === 'POST') {
         const result = updataBlog(id, req.body);
-        if (result) {
-            return {
-                msg: new SuccessModel()
+        return result.then(data => {
+            if (data) {
+                return new SuccessModel()
+            } else {
+                return new ErrorModel("更新失败")
             }
-        } else {
-            return {
-                msg: new ErrorModel("更新博客失败")
-            }
-        }
+
+        })
 
     }
 
     //这是删除一篇博客
     if (req.path === '/api/blog/del' && method === 'POST') {
         const result = delBlog(id);
-        if (result) {
-            return new SuccessModel()
-        } else {
-            return new ErrorModel("删除失败")
-        }
+        return result.then(data => {
+            if (data) {
+                return new SuccessModel()
+            } else {
+                return new ErrorModel("删除失败")
+            }
+
+        })
     }
 
 
